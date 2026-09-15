@@ -484,7 +484,7 @@ export default function Landing() {
         </div>
         <div className="flex flex-col items-stretch justify-center gap-4 bg-black p-6 sm:flex-row sm:items-center md:p-10">
           <Button href="/docs">[ READ THE DOCS ]</Button>
-          <Button href="#docs">[ VIEW REPOSITORY ]</Button>
+          <Button href="https://github.com/h5nlol/Flyer">[ VIEW REPOSITORY ]</Button>
         </div>
       </footer>
       <div className="border-t border-white px-4 py-3 font-mono text-[10px] uppercase md:px-6">
