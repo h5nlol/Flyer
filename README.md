@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/6aeda1a6-db95-4b92-b7fe-94618c6db6bf
+
 # flyer
 
 Connectome-driven simulation: the FlyWire *Drosophila* connectome (FAFB v783)
