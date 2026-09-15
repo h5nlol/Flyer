@@ -12,7 +12,7 @@
 import { controls } from './controls'
 import { onBrainFrame } from './brainData'
 
-export const SIM_URL = 'ws://localhost:8765'
+export const SIM_URL = import.meta.env.VITE_SIM_URL ?? 'ws://localhost:8765'
 
 export type SimStatus = 'offline' | 'connecting' | 'live'
 export type SimRole = 'unknown' | 'admin' | 'public'
