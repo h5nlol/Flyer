@@ -239,6 +239,24 @@ const TRIALS = [
   },
 ]
 
+/** Live countdown to the next midnight UTC, so every visitor sees the same time. Writes the DOM once a second. */
+function Countdown() {
+  const ref = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date()
+      const next = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1)
+      const s = Math.max(0, Math.floor((next - now.getTime()) / 1000))
+      const pad = (n: number) => String(n).padStart(2, '0')
+      if (ref.current) ref.current.textContent = `${pad(Math.floor(s / 3600))}:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}`
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+  return <span ref={ref}>--:--:--</span>
+}
+
 function TrialCard({ t, i }: { t: (typeof TRIALS)[number]; i: number }) {
   return (
     <article className="group flex flex-col bg-black transition-colors duration-150 hover:bg-white hover:text-black">
@@ -429,14 +447,13 @@ export default function Landing() {
             </div>
             <div className="flex flex-col justify-between gap-6 p-4 md:p-8">
               <div className="font-mono text-xs font-bold uppercase">Next environment deployment:</div>
-              {/* hardcoded for now: hook a timer to #countdown later */}
               <motion.div
                 id="countdown"
                 className="font-mono text-[clamp(3rem,6vw,6rem)] font-bold leading-none tabular-nums tracking-normal"
                 animate={{ opacity: [1, 1, 0.25, 1] }}
                 transition={{ duration: 1, repeat: Infinity, times: [0, 0.6, 0.8, 1] }}
               >
-                23:59:59
+                <Countdown />
               </motion.div>
               <a
                 href="/sim"
