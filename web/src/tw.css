@@ -1,0 +1,23 @@
+/*
+ * Tailwind for the landing and docs pages only. Preflight is deliberately left
+ * out: it is a global reset and would restyle the sim's hand-written CSS. The
+ * equivalent reset is scoped to `.tw` (the root of those two pages) instead.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  .tw, .tw *, .tw ::before, .tw ::after { box-sizing: border-box; margin: 0; padding: 0; border: 0 solid; }
+  .tw h1, .tw h2, .tw h3, .tw h4 { font-size: inherit; font-weight: inherit; }
+  .tw a { color: inherit; text-decoration: inherit; }
+  .tw ul { list-style: none; }
+  .tw table { border-collapse: collapse; }
+  .tw img, .tw video { display: block; max-width: 100%; }
+  .tw code, .tw pre { font-family: var(--font-mono); }
+}

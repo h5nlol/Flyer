@@ -1,0 +1,29 @@
+{
+  "note": "glTF is Y-up. Blender X -> x, Blender Y -> z, Blender Z -> y.",
+  "walkable": {
+    "minX": -1.7269,
+    "maxX": 1.5707,
+    "minZ": -1.62,
+    "maxZ": 1.6776,
+    "floorY": 0.0518
+  },
+  "cameraBox": {
+    "minX": -1.7679,
+    "maxX": 1.6116,
+    "minZ": -1.6419,
+    "maxZ": 1.7186,
+    "minY": 0.1118,
+    "maxY": 4.1228
+  },
+  "glassPanels": [
+    "glass_north_lower",
+    "glass_north_upper",
+    "glass_east_lower",
+    "glass_east_upper",
+    "glass_west_lower",
+    "glass_west_upper",
+    "glass_south_lower",
+    "glass_south_upper"
+  ],
+  "floorObject": "chamber_floor"
+}

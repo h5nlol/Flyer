@@ -1,0 +1,29 @@
+# KEEP OUT THE AI SHIT
+.claude/
+src/cortical_api.py
+src/mea_stream.py
+.env
+
+# Standard clutter
+node_modules/
+__pycache__/
+.next/
+dist/
+
+# Virtual Environments
+.venv/
+
+# 3D & Motion Design Source Files
+*.blend
+*.blend1
+*.aep
+Adobe After Effects Auto-Save/
+
+# Logs and Temp Files
+*.err
+*.log
+server.txt
+
+# Old & External Repositories
+landing/
+reference/

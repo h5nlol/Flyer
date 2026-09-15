@@ -1,0 +1,10 @@
+# ponytail: torch pinned with +cu128 local tag so pip must take the CUDA wheel,
+# not the CPU one PyPI serves under the same version. Bump the tag for a new CUDA.
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0+cu128
+pandas
+pyarrow
+numpy
+fastapi
+uvicorn
+websockets
