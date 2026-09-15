@@ -5,13 +5,14 @@ import { Flyer } from './Flyer'
 import { CameraRig } from './CameraRig'
 import { Environment as TargetEnvironment } from './Environment'
 import { Chamber } from './ChamberScene'
-import { ZOOM_LIMITS } from './CameraRig'
+import { MAX_BOOST, ZOOM_LIMITS } from './CameraRig'
 import { SensoryFields } from './SensoryFields'
 import { BrainScan } from './BrainScan'
 import { CortexHUD } from './CortexHUD'
 import { Loader } from './Loader'
 import { PublicUI } from './PublicUI'
 import { EventChip } from './EventChip'
+import { MobileTabs } from './MobileTabs'
 import { isAdmin } from './admin'
 import { DebugPanel } from './DebugPanel'
 import type { SceneInfo } from './controls'
@@ -68,7 +69,7 @@ export default function Sim() {
           // min/maxDistance are left wide on purpose: the camera rig enforces zoom
           // limits itself and dollies in at the glass, and a controls-side minimum
           // would push the camera back out through the wall every frame.
-          <OrbitControls makeDefault target={[0, 0.2, 0]} minDistance={0.01} maxDistance={ZOOM_LIMITS.admin[1]} />
+          <OrbitControls makeDefault target={[0, 0.2, 0]} minDistance={0.01} maxDistance={ZOOM_LIMITS.admin[1] * MAX_BOOST} />
         ) : (
           // Public: orbit around the fly, never pan off it. Zoom limits and the
           // dolly-in at the glass are enforced by CameraRig (ZOOM_LIMITS.public); the
@@ -81,7 +82,7 @@ export default function Sim() {
             enableDamping
             dampingFactor={0.08}
             minDistance={0.01}
-            maxDistance={ZOOM_LIMITS.public[1]}
+            maxDistance={ZOOM_LIMITS.public[1] * MAX_BOOST}
           />
         )}
         <CameraRig locked={!admin} />
@@ -94,6 +95,7 @@ export default function Sim() {
       <CortexHUD />
       <EventChip />
       {!admin && <PublicUI />}
+      {!admin && <MobileTabs />}
       <BrainScan />
       <Loader />
       {admin && <DebugPanel info={info} />}

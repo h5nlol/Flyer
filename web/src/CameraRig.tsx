@@ -50,6 +50,14 @@ const WALL_PAD = 0.03 // stay this far inside the glass
 const DOLLY_OUT_RATE = 2.5 // per second, easing back out once there is room
 export const ZOOM_LIMITS = { public: [0.5, 3.2], admin: [0.15, 6] } as const
 
+// Screen-ratio framing. A portrait phone sees a narrow slice of a 40 degree vertical
+// FOV, so the camera pulls back and widens as the screen gets taller than wide:
+// nothing at aspect >= 1, full effect by aspect 0.5 (a typical phone is ~0.46).
+export const MAX_BOOST = 1.5 // distance multiplier at full portrait
+const PORTRAIT_EXTRA_FOV = 14 // degrees added at full portrait
+const ASPECT_RATE = 4 // per second, eases rotation between portrait and landscape
+const portraitAmount = (aspect: number) => THREE.MathUtils.clamp((1 - aspect) / 0.5, 0, 1)
+
 // scratch -- reused every frame
 const _goal = new THREE.Vector3()
 const _delta = new THREE.Vector3()
@@ -81,11 +89,13 @@ function clampToBox(v: THREE.Vector3) {
 /** `locked`: public view. Always follow mode, no presets; the orbit target sits on the body. */
 export function CameraRig({ locked = false }: { locked?: boolean }) {
   const { camera } = useThree()
+  const size = useThree((s) => s.size)
+  const baseFov = useRef((camera as THREE.PerspectiveCamera).fov)
   const orbit = useThree((s) => s.controls) as unknown as OrbitControlsImpl | null
   const shadows = useRef<THREE.Group>(null)
   const [zoomMin, zoomMax] = locked ? ZOOM_LIMITS.public : ZOOM_LIMITS.admin
   // ideal = the distance the viewer asked for; applied = where the camera actually is
-  const dolly = useRef({ ideal: -1, applied: -1 })
+  const dolly = useRef({ ideal: -1, applied: -1, boost: 1 })
 
   // keyboard presets
   useEffect(() => {
@@ -112,6 +122,17 @@ export function CameraRig({ locked = false }: { locked?: boolean }) {
     if (!orbit) return
     const mode = controls.cameraMode
 
+    // Portrait screens (phones) get a wider, further-back view, updated live as the
+    // ratio changes. Landscape is untouched: t = 0 means boost 1 and the base FOV.
+    const t = portraitAmount(size.width / Math.max(1, size.height))
+    const boost = 1 + (MAX_BOOST - 1) * t
+    const persp = camera as THREE.PerspectiveCamera
+    const fovGoal = baseFov.current + PORTRAIT_EXTRA_FOV * t
+    if (persp.isPerspectiveCamera && Math.abs(persp.fov - fovGoal) > 0.01) {
+      persp.fov += (fovGoal - persp.fov) * (1 - Math.exp(-ASPECT_RATE * dt))
+      persp.updateProjectionMatrix()
+    }
+
     if (mode === 1) {
       // Move target and camera by the same delta: the fly stays framed and the
       // user's orbit angle and distance survive.
@@ -134,12 +155,18 @@ export function CameraRig({ locked = false }: { locked?: boolean }) {
       if (d < 1e-6) return
       _dir.divideScalar(d)
       const s = dolly.current
-      if (s.ideal < 0) s.ideal = s.applied = THREE.MathUtils.clamp(d, zoomMin, zoomMax)
+      if (s.ideal < 0) {
+        s.ideal = THREE.MathUtils.clamp(d / boost, zoomMin, zoomMax)
+        s.applied = d
+        s.boost = boost
+      }
       // Rotation and following keep the distance; any change since last frame is the
-      // viewer zooming (wheel / pinch, including damping), so it moves the ideal.
-      s.ideal = THREE.MathUtils.clamp(s.ideal + (d - s.applied), zoomMin, zoomMax)
+      // viewer zooming (wheel / pinch, including damping), so it moves the ideal. The
+      // ideal is stored unboosted, so rotating the phone rescales it instead of drifting.
+      s.ideal = THREE.MathUtils.clamp(s.ideal + (d - s.applied) / s.boost, zoomMin, zoomMax)
+      s.boost = boost
       const room = roomAlong(orbit.target, _dir)
-      const want = Math.min(s.ideal, room)
+      const want = Math.min(s.ideal * boost, room)
       // In immediately (never through the glass), out gently (no pumping).
       s.applied = want < s.applied ? want : s.applied + (want - s.applied) * (1 - Math.exp(-DOLLY_OUT_RATE * dt))
       camera.position.copy(orbit.target).addScaledVector(_dir, s.applied)
