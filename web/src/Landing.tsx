@@ -461,6 +461,17 @@ export default function Landing() {
               >
                 [ WATCH LIVE FEED ]
               </a>
+              <div className="flex flex-col gap-2 border-t border-black pt-4 font-mono text-xs text-black">
+                <span className="font-bold uppercase">Support me on Robinhood:</span>
+                <a
+                  href="https://etherscan.io/address/0x6f0a83c01d7a866b0948257cb6045846384559f8"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="break-all font-bold hover:underline"
+                >
+                  CA: 0x6f0a83c01d7a866b0948257cb6045846384559f8
+                </a>
+              </div>
             </div>
           </div>
         </div>
